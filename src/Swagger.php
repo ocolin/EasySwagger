@@ -44,6 +44,38 @@ class Swagger extends File
     }
 
 
+/*
+--------------------------------------------------------------------- */
+
+    public function get_Path(
+        string $path,
+        string $method,
+        ?array $data = null
+    ) : object
+    {
+        $this->method = $method;
+        $this->path   = $path;
+        $this->operation = new Operation(
+              path: $this->path,
+            method: $this->method
+        );
+        $this->path = Operation::build_Path(
+                  path: $this->path,
+            parameters:  $this->operation->parameters,
+                  data: $data
+        );
+
+        if( $data !== null ) {
+            $this->sort_Input_Data( data: $data );
+        }
+
+        return $this->http->call(
+            method: $this->method,
+               uri: $this->path,
+              body: $this->body,
+             query: $this->query
+        );
+    }
 
 /*
 --------------------------------------------------------------------- */

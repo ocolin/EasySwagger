@@ -108,6 +108,7 @@ class Swagger
     ) : object|array
     {
         $this->path   = $path;
+        $this->query  = [];
         $this->method = strtolower( string: $method );
         $this->operation = new Operation(
               path: $this->path,
@@ -123,12 +124,18 @@ class Swagger
             $this->sort_Input_Data( data: $data );
         }
 
-        return $this->http->call(
-            method: $this->method,
-               uri: $this->path,
-              body: $this->body,
-             query: $this->query,
-        )->body;
+        try {
+            return $this->http->call(
+                method: $this->method,
+                   uri: $this->path,
+                  body: $this->body,
+                 query: $this->query,
+            )->body;
+        }
+        catch( GuzzleException $e ) {
+            self::error( msg: $e->getMessage() );
+            exit;
+        }
     }
 
 

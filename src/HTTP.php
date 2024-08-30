@@ -32,7 +32,7 @@ class HTTP
     /**
      * @var string Token used for API authentication
      */
-    private readonly string $token;
+    private string $token;
 
 
 /* CONSTRUCTOR
@@ -43,27 +43,22 @@ class HTTP
      */
     public function __construct(
         ?Client $client   = null,
-        ?string $base_uri = null,
+         string $base_uri = null,
+         string $token    = null,
            bool $verify   = false,
            bool $errors   = false,
-        ?string $token    = null
+
     )
     {
-        if( empty( $_ENV['UISP_API_HOST']) or empty( $_ENV['UISP_API_TOKEN'] )) {
-            EasyEnv::loadEnv( path: __DIR__ . '/../.env' );
-        }
-
-        $this->token = $token ?? $_ENV['UISP_API_TOKEN'];
-
-        $this->base_uri = $base_uri
-            ?? $_ENV['UISP_API_HOST'] . $_ENV['UISP_API_BASEURI'] . '/';
+        $this->base_uri = $base_uri;
+        $this->token    = $token ?? $_ENV['SWAGGER_TOKEN'];
         $this->headers  = $this->default_Headers();
         $this->client   = $client ?? new Client([
             'base_uri'        => $this->base_uri,
             'verify'          => $verify,
             'http_errors'     => $errors,
-            'timeout'         => 10,
-            'connect_timeout' => 10
+            'timeout'         => 5,
+            'connect_timeout' => 5
         ]);
     }
 
@@ -122,7 +117,7 @@ class HTTP
         return [
             'x-auth-token' => $this->token,
             'Content-type' => 'application/json; charset=utf-8',
-            'User-Agent'   => 'UISP API Client 1.0',
+            'User-Agent'   => 'API Client 1.0',
         ];
     }
 

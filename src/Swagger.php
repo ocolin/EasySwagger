@@ -5,67 +5,121 @@ declare( strict_types = 1 );
 namespace Ocolin\EasySwagger;
 
 use Exception;
+use GuzzleHttp\Exception\GuzzleException;
 use Ocolin\Env\EasyEnv;
 use stdClass;
 
-class Swagger extends File
+class Swagger
 {
+    /**
+     * @var object Swagger data file.
+     */
+    public static object $file;
 
-    public readonly string $host;
+    /**
+     * @var string URI of API host.
+     */
+    public string $host;
 
+    /**
+     * @var string URI path of API URL.
+     */
     public string $path;
 
-    public readonly string $method;
+    /**
+     * @var string HTTP method for API.
+     */
+    public string $method;
 
-    public Operation $operation;
-
+    /**
+     * @var array Data for HTTP URI
+     */
     public array $query = [];
 
+    /**
+     * @var object Data for HTTP body
+     */
     public object $body;
 
+    /**
+     * @var Operation API Operation.
+     */
+    public Operation $operation;
+
+    /**
+     * @var HTTP HTTP client to call API with.
+     */
     protected HTTP $http;
 
-/*
+
+/* CONSTRUCTOR
 ---------------------------------------------------------------------------- */
 
+    /**
+     * @param string|null $host     Host name of API server.
+     * @param string|null $api_file Path/name of Swagger json file.
+     * @param string|null $base_uri Base URI of the API path.
+     * @param string|null $env_file Path/name of environment file.
+     * @param string|null $token    API token.
+     * @param bool|null $standalone Use library as standalone instead of plugin.
+     * @throws Exception
+     */
     public function __construct(
         ?string $host     = null,
         ?string $api_file = null,
-        ?string $env_file = null
+        ?string $base_uri = null,
+        ?string $env_file = null,
+        ?string $token    = null,
+        ?bool $standalone = false
     )
     {
-        if( $host === null OR $api_file === null ) {
-            $this->load_ENV( file_name: $env_file );
+        if( $standalone === true ) {
+            $this->load_ENV( $env_file );
         }
-        $this->host = $host ?? $_ENV['UISP_API_HOST'];
+
+        $host       = $host     ?? $_ENV['SWAGGER_HOST'];
+        $base_uri   = $base_uri ?? $_ENV['SWAGGER_BASE_URI'];
+        $token      = $token    ?? $_ENV['SWAGGER_TOKEN'];
         self::$file = $this->load_JSON( file_name: $api_file );
         $this->body = new stdClass();
-        $this->http = new HTTP();
+
+        $this->http = new HTTP(
+            base_uri: $host . $base_uri,
+               token: $token,
+        );
     }
 
 
-/*
+
+/* QUERY BY API PATH
 --------------------------------------------------------------------- */
 
-    public function get_Path(
-        string $path,
-        string $method,
-        ?array $data = null
-    ) : object
+    /**
+     * @param string $path      Swagger operation path (copy/paste from docs)
+     * @param string $method    HTTP method.
+     * @param array $data       Optional data parameters.
+     * @return object|array     API output
+     * @throws GuzzleException
+     */
+    public function path(
+         string $path,
+         string $method = 'get',
+          array $data   = []
+    ) : object|array
     {
-        $this->method = $method;
         $this->path   = $path;
+        $this->method = strtolower( string: $method );
         $this->operation = new Operation(
               path: $this->path,
             method: $this->method
         );
         $this->path = Operation::build_Path(
                   path: $this->path,
-            parameters:  $this->operation->parameters,
+            parameters: $this->operation->parameters,
                   data: $data
         );
 
-        if( $data !== null ) {
+        if( !empty( $data ) ) {
             $this->sort_Input_Data( data: $data );
         }
 
@@ -73,100 +127,22 @@ class Swagger extends File
             method: $this->method,
                uri: $this->path,
               body: $this->body,
-             query: $this->query
-        );
-    }
-
-/*
---------------------------------------------------------------------- */
-
-    public static function call_By_Id(
-         string $id,
-        ?string $host     = null,
-        ?string $env_file = null,
-        ?string $api_file = null,
-         ?array $data     = null
-    ) : self
-    {
-        $swagger = new self(
-                host: $host,
-            api_file: $api_file,
-            env_file: $env_file
-        );
-        $swagger->get_Path_From_Id( $id );
-
-        return $swagger;
+             query: $this->query,
+        )->body;
     }
 
 
 
-/*
+/* SORT THE INPUT ARRAY DATA INTO QUERY CATEGORIES
 --------------------------------------------------------------------- */
 
-    public static function call_By_Path(
-         string $path,
-         string $method,
-        ?string $host     = null,
-        ?string $env_file = null,
-        ?string $api_file = null,
-         ?array $data     = null
-    ) : object
-    {
-        $swagger = new self(
-                host: $host,
-            api_file: $api_file,
-            env_file: $env_file
-        );
-        $swagger->path = $path;
-        $swagger->method = $method;
-        $swagger->operation = new Operation(
-              path: $swagger->path,
-            method: $swagger->method
-        );
-        $swagger->path = Operation::build_Path(
-            path: $swagger->path,
-            parameters:  $swagger->operation->parameters,
-            data: $data
-        );
-
-        if( $data !== null ) {
-            $swagger->sort_Input_Data( data: $data );
-        }
-
-        return $swagger->http->call(
-            method: $swagger->method,
-            uri: $swagger->path,
-            body: $swagger->body,
-            query: $swagger->query
-        );
-    }
-
-
-
-/*
---------------------------------------------------------------------- */
-
-    public function get_Path_From_Id( string $id ) : void
-    {
-        foreach( self::$file->paths as $pname => $fpath )
-        {
-            foreach( $fpath as $mname => $method )
-            {
-                if( $method->operationId === $id ) {
-                    $this->method = $mname;
-                    $this->path = $pname;
-                    return;
-                }
-            }
-        }
-
-        self::error( msg: "Operation '$id' was not found" );
-    }
-
-
-/*
---------------------------------------------------------------------- */
-
+    /**
+     * Take the input parameters and assign them to Path, Query, or Body
+     * based on the API operation specifics.
+     *
+     * @param array $data input data for query.
+     * @return void
+     */
     private function sort_Input_Data( array $data ) : void
     {
         foreach( $data as $name => $value )
@@ -187,44 +163,66 @@ class Swagger extends File
         }
     }
 
-/*
+
+
+/* LOAD ENVIRONMENT VARIABLES
 --------------------------------------------------------------------- */
 
-    private function load_ENV( ?string $file_name = null ) : void
+    /**
+     * @param string|null $file_name File/path with environment variables.
+     * @return void
+     */
+    private function load_ENV( ?string $file_name ) : void
     {
         $file_name = $file_name ??  __DIR__ . '/../.env';
         try {
             EasyEnv::loadEnv( path: $file_name, append: true);
         } catch ( Exception $e) {
             self::error( msg: "Unable to load Environment variables: $file_name." );
+            exit;
         }
     }
 
 
 
-/*
+/* LOAD JSON DATA
 --------------------------------------------------------------------- */
 
-    private function load_JSON( ?string $file_name = null ) : object
+    /**
+     * @param string|null $file_name Swagger API file/path.
+     * @return object Swagger data object.
+     */
+    private function load_JSON( ?string $file_name ) : object
     {
-        // SOME OF THIS IS SLOPPY. CLEAN UP LATER
-        $file_name = $file_name ?? $_ENV['API_FILE'];
+        $file_name = $file_name ?? $_ENV['SWAGGER_FILE'];
         $contents = @file_get_contents( filename: $file_name );
 
         if( $contents === false ) {
             self::error( msg: "API JSON file '$file_name' not found." );
-            exit();
+            exit;
         }
-        else {
-            $json = json_decode( json: $contents );
-            if( $json === false ) {
-                self::error( msg: "API is not valid JSON." );
-                exit();
-            }
+
+        $json = json_decode( json: $contents );
+        if( $json === false ) {
+            self::error( msg: "API is not valid JSON." );
+            exit;
         }
 
         return (object)$json;
     }
 
 
+/* HANDLE ERRORS
+---------------------------------------------------------------------------- */
+
+    /**
+     * Temporary until ready to start handling errors.
+     *
+     * @param string $msg
+     * @return void
+     */
+    public static function error( string $msg ) : void
+    {
+        fwrite( stream: STDERR, data: $msg . "\n" );
+    }
 }

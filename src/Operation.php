@@ -109,12 +109,12 @@ class Operation extends File
 
     public function __construct( string $path, string $method )
     {
-        if( !isset( self::$file->paths->$path->$method )) {
-            self::error( msg: "Operation for $method / $path not found." );
-            exit();
+        if( !isset( Swagger::$file->paths->$path->$method )) {
+            Swagger::error( msg: "Operation for $method / $path not found." );
+            exit;
         }
 
-        $raw = self::$file->paths->$path->$method;
+        $raw = Swagger::$file->paths->$path->$method;
 
         if( isset( $raw->tags )) { $this->tags = $raw->tags; }
         if( isset( $raw->summary )) { $this->summary = $raw->summary; }

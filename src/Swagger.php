@@ -161,6 +161,11 @@ class Swagger
             $found = false;
             foreach( $this->operation->parameters as $param )
             {
+                if( $name == $param->name AND $param->in == 'path' ) {
+                    $found = true;
+                    break;
+                }
+
                 if( $name == $param->name AND $param->in == 'query' ) {
                     $this->query[$name] = $value;
                     $found = true;

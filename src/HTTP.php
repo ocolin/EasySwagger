@@ -34,6 +34,11 @@ class HTTP
      */
     private string $token;
 
+    /**
+     * @var string Header name for auth token.
+     */
+    private string $token_name;
+
 
 /* CONSTRUCTOR
 ---------------------------------------------------------------------------- */
@@ -42,23 +47,25 @@ class HTTP
      * @throws Exception
      */
     public function __construct(
-        ?Client $client   = null,
-         string $base_uri = null,
-         string $token    = null,
-           bool $verify   = false,
-           bool $errors   = false,
+         string $token,
+        ?Client $client     = null,
+        ?string $base_uri   = null,
+         string $token_name = 'x-auth-token',
+           bool $verify     = false,
+           bool $errors     = false,
 
     )
     {
-        $this->base_uri = $base_uri;
-        $this->token    = $token ?? $_ENV['SWAGGER_TOKEN'];
-        $this->headers  = $this->default_Headers();
-        $this->client   = $client ?? new Client([
+        $this->base_uri   = $base_uri;
+        $this->token      = $token;
+        $this->token_name = $token_name;
+        $this->headers    = $this->default_Headers();
+        $this->client     = $client ?? new Client([
             'base_uri'        => $this->base_uri,
             'verify'          => $verify,
             'http_errors'     => $errors,
-            'timeout'         => 5,
-            'connect_timeout' => 5
+            'timeout'         => 20,
+            'connect_timeout' => 20
         ]);
     }
 
@@ -91,14 +98,21 @@ class HTTP
         $options = [ 'headers' => $this->headers ];
 
         $uri = ltrim( string: $uri, characters: '/' );
-        if( $query !== null ) { $options['query'] = Query::build( $query ); }
-        if( $body  !== null ) { $options['body']  = json_encode( $body ); }
 
-        $request = $this->client->request(
-             method: $method,
-                uri: $uri,
-            options: $options
-        );
+        if( $query !== null ) { $options['query'] = Query::build( $query ); }
+        if( !empty( (array)$body )) { $options['body']  = json_encode( $body ); }
+
+        try {
+            $request = $this->client->request(
+                 method: $method,
+                    uri: $uri,
+                options: $options
+            );
+        }
+        catch ( Exception $e ) {
+            Swagger::error( $e->getMessage() );
+            exit;
+        }
 
         return self::return_Results( request: $request );
     }
@@ -115,9 +129,9 @@ class HTTP
     private function default_Headers() : array
     {
         return [
-            'x-auth-token' => $this->token,
-            'Content-type' => 'application/json; charset=utf-8',
-            'User-Agent'   => 'API Client 1.0',
+            $this->token_name => $this->token,
+            'Content-type'    => 'application/json; charset=utf-8',
+            'User-Agent'      => 'API Client 1.0',
         ];
     }
 
@@ -126,6 +140,10 @@ class HTTP
 /* RETURN HTTP RESPONSE RESULTS
 ---------------------------------------------------------------------------- */
 
+    /**
+     * @param ResponseInterface $request Guzzle Request object.
+     * @return stdClass API data object
+     */
     private static function return_Results( ResponseInterface $request ) : object
     {
 

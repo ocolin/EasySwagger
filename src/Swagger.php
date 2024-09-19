@@ -61,31 +61,35 @@ class Swagger
      * @param string|null $base_uri Base URI of the API path.
      * @param string|null $env_file Path/name of environment file.
      * @param string|null $token    API token.
+     * @param string|null $token_name Name of header to use for auth token.
      * @param bool|null $standalone Use library as standalone instead of plugin.
      * @throws Exception
      */
     public function __construct(
-        ?string $host     = null,
-        ?string $api_file = null,
-        ?string $base_uri = null,
-        ?string $env_file = null,
-        ?string $token    = null,
-        ?bool $standalone = false
+        ?string $host       = null,
+        ?string $api_file   = null,
+        ?string $base_uri   = null,
+        ?string $env_file   = null,
+        ?string $token      = null,
+        ?string $token_name = null,
+        ?bool $standalone   = false
     )
     {
         if( $standalone === true ) {
             $this->load_ENV( $env_file );
         }
 
-        $host       = $host     ?? $_ENV['SWAGGER_HOST'];
-        $base_uri   = $base_uri ?? $_ENV['SWAGGER_BASE_URI'];
-        $token      = $token    ?? $_ENV['SWAGGER_TOKEN'];
+        $host       = $host       ?? $_ENV['SWAGGER_HOST'];
+        $base_uri   = $base_uri   ?? $_ENV['SWAGGER_BASE_URI'];
+        $token      = $token      ?? $_ENV['SWAGGER_TOKEN'];
+        $token_name = $token_name ?? 'x-auth-token';
         self::$file = $this->load_JSON( file_name: $api_file );
         $this->body = new stdClass();
 
         $this->http = new HTTP(
-            base_uri: $host . $base_uri,
-               token: $token,
+                 token: $token,
+              base_uri: $host . $base_uri,
+            token_name: $token_name,
         );
     }
 

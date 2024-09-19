@@ -8,7 +8,7 @@ class Parameter extends File
 {
     /**
      * @var string Required. The name of the parameter. Parameter names
-     * are case sensitive.
+     * are case-sensitive.
      *
      * If in is "path", the name field MUST correspond to the associated
      * path segment from the path field in the Paths Object. See Path

@@ -171,6 +171,12 @@ class Swagger
                     $found = true;
                     break;
                 }
+
+                if( str_starts_with( haystack: $name, needle: 'cf_' )) {
+                    $this->query[$name] = $value;
+                    $found = true;
+                    break;
+                }
             }
 
             if( !$found ) {

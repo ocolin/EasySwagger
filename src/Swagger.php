@@ -14,7 +14,7 @@ class Swagger
     /**
      * @var object Swagger data file.
      */
-    public static object $file;
+    public object $file;
 
     /**
      * @var string URI of API host.
@@ -83,7 +83,7 @@ class Swagger
         $base_uri   = $base_uri   ?? $_ENV['SWAGGER_BASE_URI'];
         $token      = $token      ?? $_ENV['SWAGGER_TOKEN'];
         $token_name = $token_name ?? 'x-auth-token';
-        self::$file = $this->load_JSON( file_name: $api_file );
+        $this->file = $this->load_JSON( file_name: $api_file );
         $this->body = new stdClass();
 
         $this->http = new HTTP(
@@ -103,7 +103,6 @@ class Swagger
      * @param string $method    HTTP method.
      * @param array $data       Optional data parameters.
      * @return object|array     API output
-     * @throws GuzzleException
      */
     public function path(
          string $path,
@@ -116,7 +115,8 @@ class Swagger
         $this->method = strtolower( string: $method );
         $this->operation = new Operation(
               path: $this->path,
-            method: $this->method
+            method: $this->method,
+              file: $this->file
         );
         $this->path = Operation::build_Path(
                   path: $this->path,

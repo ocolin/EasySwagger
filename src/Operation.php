@@ -107,14 +107,14 @@ class Operation extends File
 /*
 --------------------------------------------------------------------- */
 
-    public function __construct( string $path, string $method )
+    public function __construct( string $path, string $method, object $file )
     {
-        if( !isset( Swagger::$file->paths->$path->$method )) {
+        if( !isset( $file->paths->$path->$method )) {
             Swagger::error( msg: "Operation for $method / $path not found." );
             exit;
         }
 
-        $raw = Swagger::$file->paths->$path->$method;
+        $raw = $file->paths->$path->$method;
 
         if( isset( $raw->tags )) { $this->tags = $raw->tags; }
         if( isset( $raw->summary )) { $this->summary = $raw->summary; }

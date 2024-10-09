@@ -152,6 +152,7 @@ class HTTP
         $output->headers = $request->getHeaders();
         $output->status_message = $request->getReasonPhrase();
         $output->body = $request->getBody()->getContents();
+        if( $output->body == null ) { $output->body = []; }
         if(
             isset( $output->headers['Content-Type'] ) AND
             str_contains(

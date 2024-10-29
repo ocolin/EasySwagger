@@ -110,6 +110,7 @@ class Swagger
           array $data   = []
     ) : object|array
     {
+        $this->body   = new stdClass();
         $this->path   = $path;
         $this->query  = [];
         $this->method = strtolower( string: $method );

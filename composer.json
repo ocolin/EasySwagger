@@ -2,12 +2,6 @@
   "name": "ocolin/easy-swagger",
   "description": "Basic REST client that reads Swagger file",
   "type": "library",
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/ocolin/EasyEnv"
-    }
-  ],
   "require": {
     "php": ">=8.3",
     "guzzlehttp/guzzle": "^7.9",

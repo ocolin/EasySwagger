@@ -8,65 +8,81 @@ use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Query;
-use Ocolin\Env\EasyEnv;
 use Psr\Http\Message\ResponseInterface;
-use stdClass;
 
 class HTTP
 {
     /**
-     * @var Client Guzzle HTTP Client
+     * @var Client Guzzle HTTP Client.
      */
     private Client $client;
 
     /**
-     * @var string Common URL used in all queries
+     * @var string|null Common URL used in all queries.
      */
-    private string $base_uri;
+    private ?string $base_uri;
 
     /**
-     * @var array<string,string|int|float>
+     * @var array<string,string|int|float> HTTP Headers.
      */
     private array $headers;
 
     /**
-     * @var string Token used for API authentication
+     * @var Auth Object containing auth daya.
      */
-    private string $token;
+    private Auth $auth;
 
-    /**
-     * @var string Header name for auth token.
-     */
-    private string $token_name;
 
 
 /* CONSTRUCTOR
 ---------------------------------------------------------------------------- */
 
     /**
-     * @throws Exception
+     * @param Auth $auth Authentication object.
+     * @param Client|null $client Optional Guzzle pre-configured client.
+     * @param string|null $base_uri URL of API.
+     * @param bool $verify Verify SSL on connection.
+     * @param bool $errors Report errors.
      */
+
     public function __construct(
-         string $token,
+           Auth $auth,
         ?Client $client     = null,
         ?string $base_uri   = null,
-         string $token_name = 'x-auth-token',
            bool $verify     = false,
            bool $errors     = false,
 
     )
     {
-        $this->base_uri   = $base_uri;
-        $this->token      = $token;
-        $this->token_name = $token_name;
-        $this->headers    = $this->default_Headers();
-        $this->client     = $client ?? new Client([
-            'base_uri'        => $this->base_uri,
-            'verify'          => $verify,
-            'http_errors'     => $errors,
-            'timeout'         => 20,
-            'connect_timeout' => 20
-        ]);
+        $this->auth     = $auth;
+        $this->base_uri = $base_uri;
+        $this->headers  = $this->default_Headers();
+
+        if( $client !== null ) {
+            $this->client = $client;
+            return;
+        }
+
+        if( $this->auth->method === 'basicauth' ) {
+            $this->client = new Client([
+                'base_uri'        => $this->base_uri,
+                'verify'          => $verify,
+                'http_errors'     => $errors,
+                'auth'             => [ $this->auth->username, $this->auth->password ],
+                'timeout'         => 20,
+                'connect_timeout' => 20
+            ]);
+        }
+        else{
+            $this->headers[ $this->auth->token_header ] = $this->auth->token;
+            $this->client = new Client([
+                'base_uri'        => $this->base_uri,
+                'verify'          => $verify,
+                'http_errors'     => $errors,
+                'timeout'         => 20,
+                'connect_timeout' => 20
+            ]);
+        }
     }
 
 
@@ -77,12 +93,12 @@ class HTTP
     /**
      * Make an HTTP call to the Swagger based API server
      *
-     * @param string $method
-     * @param string $uri
-     * @param object|array|null $body
-     * @param array<string,mixed>|null $query
-     * @param array<string,string|int|float> $headers
-     * @return object
+     * @param string $method HTTP method to call.
+     * @param string $uri HTTP URI of API method.
+     * @param object|array<string,mixed>|null $body API query payload.
+     * @param array<string,mixed>|null $query URI parameters.
+     * @param array<string,string|int|float> $headers Optional HTTP headers.
+     * @return Data Object with API response data.
      * @throws GuzzleException
      */
 
@@ -92,7 +108,7 @@ class HTTP
         object|array|null $body = null,
                    ?array $query = null,
                     array $headers = []
-    ) : object
+    ) : Data
     {
         $this->headers = array_merge( $this->headers, $headers );
         $options = [ 'headers' => $this->headers ];
@@ -110,13 +126,15 @@ class HTTP
             );
         }
         catch ( Exception $e ) {
-            Swagger::error( $e->getMessage() );
-            exit;
+            return new Data(
+                status: 520,
+                status_message: "Client: " . $e->getMessage(),
+                body: $e->getTraceAsString()
+            );
         }
 
         return self::return_Results( request: $request );
     }
-
 
 
 
@@ -129,9 +147,8 @@ class HTTP
     private function default_Headers() : array
     {
         return [
-            $this->token_name => $this->token,
             'Content-type'    => 'application/json; charset=utf-8',
-            'User-Agent'      => 'API Client 1.0',
+            'User-Agent'      => 'EasySwagger Client 2.0',
         ];
     }
 
@@ -142,16 +159,16 @@ class HTTP
 
     /**
      * @param ResponseInterface $request Guzzle Request object.
-     * @return stdClass API data object
+     * @return Data API data object
      */
     private static function return_Results( ResponseInterface $request ) : object
     {
-
-        $output = new stdClass();
-        $output->status = $request->getStatusCode();
-        $output->headers = $request->getHeaders();
-        $output->status_message = $request->getReasonPhrase();
-        $output->body = $request->getBody()->getContents();
+        $output = new Data(
+            status: $request->getStatusCode(),
+            status_message: $request->getReasonPhrase(),
+            headers: $request->getHeaders(),
+            body: $request->getBody()->getContents()
+        );
 
         if(
             isset( $output->headers['Content-Type'] ) AND

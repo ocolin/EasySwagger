@@ -30,7 +30,7 @@ class Parameter extends File
      * contain examples of use. GFM syntax can be used for rich
      * text representation.
      */
-    public readonly string $description;
+    public string $description;
 
     /**
      * @var bool Determines whether this parameter is mandatory. If
@@ -38,13 +38,13 @@ class Parameter extends File
      * its value MUST be true. Otherwise, the property MAY be
      * included and its default value is false.
      */
-    public readonly bool $required;
+    public bool $required;
 
     /**
      * @var object Required. The schema defining the type used
      * for the body parameter.
      */
-    public readonly object $schema;
+    public object $schema;
 
     /**
      * @var string Required. The type of the parameter. Since the
@@ -55,13 +55,13 @@ class Parameter extends File
      * " application/x-www-form-urlencoded" or both and the parameter
      * MUST be in "formData".
      */
-    public readonly string $type;
+    public string $type;
 
     /**
      * @var string The extending format for the previously mentioned
      * type. See Data Type Formats for further details.
      */
-    public readonly string $format;
+    public string $format;
 
     /**
      * @var bool Sets the ability to pass empty-valued parameters.
@@ -69,13 +69,13 @@ class Parameter extends File
      * and allows you to send a parameter with a name only or an
      * empty value. Default value is false.
      */
-    public readonly bool $allowEmptyValue;
+    public bool $allowEmptyValue;
 
     /**
      * @var object Required if type is "array". Describes the type of
      * items in the array.
      */
-    public readonly object $items;
+    public object $items;
 
     /**
      * @var string Determines the format of the array if type array
@@ -90,7 +90,7 @@ class Parameter extends File
      * This is valid only for parameters in "query" or "formData".
      * Default value is csv.
      */
-    public readonly string $collectionFormat;
+    public string $collectionFormat;
 
     /**
      * @var mixed Declares the value of the parameter that the server
@@ -102,67 +102,67 @@ class Parameter extends File
      * Unlike JSON Schema this value MUST conform to the defined type
      * for this parameter.
      */
-    public readonly mixed $default;
+    public mixed $default;
 
     /**
      * @var int See https://tools.ietf.org/html/draft-fge-json-schema-validation-00#section-5.1.2
      */
-    public readonly int $maximum;
+    public int $maximum;
 
     /**
      * @var bool See https://tools.ietf.org/html/draft-fge-json-schema-validation-00#section-5.1.2
      */
-    public readonly bool $exclusiveMaximum;
+    public bool $exclusiveMaximum;
 
     /**
      * @var int See https://tools.ietf.org/html/draft-fge-json-schema-validation-00#section-5.1.3
      */
-    public readonly int $minimum;
+    public int $minimum;
 
     /**
      * @var bool See https://tools.ietf.org/html/draft-fge-json-schema-validation-00#section-5.1.3
      */
-    public readonly bool $exclusiveMinimum;
+    public bool $exclusiveMinimum;
 
     /**
      * @var int See https://tools.ietf.org/html/draft-fge-json-schema-validation-00#section-5.2.1
      */
-    public readonly int $maxLength;
+    public int $maxLength;
 
     /**
      * @var int See https://tools.ietf.org/html/draft-fge-json-schema-validation-00#section-5.2.2
      */
-    public readonly int $minLength;
+    public int $minLength;
 
     /**
      * @var string See https://tools.ietf.org/html/draft-fge-json-schema-validation-00#section-5.2.3
      */
-    public readonly string $pattern;
+    public string $pattern;
 
     /**
      * @var int See https://tools.ietf.org/html/draft-fge-json-schema-validation-00#section-5.3.2
      */
-    public readonly int $maxItems;
+    public int $maxItems;
 
     /**
      * @var int See https://tools.ietf.org/html/draft-fge-json-schema-validation-00#section-5.3.3
      */
-    public readonly int $minItems;
+    public int $minItems;
 
     /**
      * @var bool See https://tools.ietf.org/html/draft-fge-json-schema-validation-00#section-5.3.4
      */
-    public readonly bool $uniqueItems;
+    public bool $uniqueItems;
 
     /**
-     * @var array See https://tools.ietf.org/html/draft-fge-json-schema-validation-00#section-5.5.1
+     * @var string[] See https://tools.ietf.org/html/draft-fge-json-schema-validation-00#section-5.5.1
      */
-    public readonly array $enum;
+    public array $enum;
 
     /**
      * @var int See https://tools.ietf.org/html/draft-fge-json-schema-validation-00#section-5.1.1
      */
-    public readonly int $multipleOf;
+    public int $multipleOf;
 
 
 /*

@@ -4,7 +4,7 @@ declare( strict_types = 1 );
 
 namespace Ocolin\EasySwagger\Tests;
 
-use Ocolin\Env\EasyEnv;
+use Ocolin\EasyEnv\LoadEnv;
 use Ocolin\EasySwagger\Swagger;
 use PHPUnit\Framework\TestCase;
 
@@ -37,6 +37,6 @@ class testUISP extends TestCase
 
     public static function setUpBeforeClass(): void
     {
-        EasyEnv::loadEnv( path:__DIR__ . '/../testFiles/.env.uisp', append: true );
+        new LoadEnv( files:__DIR__ . '/../testFiles/.env.uisp', append: true );
     }
 }

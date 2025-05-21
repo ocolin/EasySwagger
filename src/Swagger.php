@@ -7,7 +7,7 @@ namespace Ocolin\EasySwagger;
 use Exception;
 use Ocolin\EasySwagger\Errors\InvalidMethodException;
 use Ocolin\EasySwagger\Errors\MissingPropsException;
-use Ocolin\Env\EasyEnv;
+use Ocolin\EasyEnv\LoadEnv;
 use stdClass;
 use GuzzleHttp\Exception\GuzzleException;
 use Ocolin\EasySwagger\Errors\MissingJsonException;
@@ -133,6 +133,7 @@ class Swagger
      * @throws GuzzleException
      * @throws InvalidMethodException
      */
+
     public function path(
          string $path,
          string $method = 'get',
@@ -223,7 +224,7 @@ class Swagger
     {
         $file_name = $file_name ??  __DIR__ . '/../.env';
         try {
-            EasyEnv::loadEnv(path: $file_name, append: true);
+            new LoadEnv( files: $file_name, append: true);
         }
         catch( Exception $e ) {
             throw new LoadEnvException( message: $e->getMessage() );

@@ -5,7 +5,7 @@
   "require": {
     "php": ">=8.3",
     "guzzlehttp/guzzle": "^7.9",
-    "ocolin/easyenv": "^1.2",
+    "ocolin/easyenv": "^2.0",
     "ext-ctype": "*"
   },
   "require-dev": {

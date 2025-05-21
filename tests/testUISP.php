@@ -2,11 +2,14 @@
 
 declare( strict_types = 1 );
 
+
 namespace Ocolin\EasySwagger\Tests;
 
 use Ocolin\EasyEnv\LoadEnv;
 use Ocolin\EasySwagger\Swagger;
 use PHPUnit\Framework\TestCase;
+
+error_reporting(E_ALL);
 
 class testUISP extends TestCase
 {

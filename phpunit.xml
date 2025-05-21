@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        bootstrap="vendor/autoload.php"
+        colors="true"
+        stopOnFailure="true"
+        beStrictAboutChangesToGlobalState="true"
+        xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.3/phpunit.xsd"
+        cacheDirectory=".phpunit.cache"
+        displayDetailsOnTestsThatTriggerWarnings="true"
+>
+    <testsuites>
+            <testsuite name="Tests">
+                <file>tests/testBad.php</file>
+                <file>tests/testCalix.php</file>
+                <file>tests/testNetbox.php</file>
+                <file>tests/testPlesk.php</file>
+                <file>tests/testTarana.php</file>
+                <file>tests/testUISP.php</file>
+            </testsuite>
+    </testsuites>
+</phpunit>

@@ -4,6 +4,7 @@ declare( strict_types = 1 );
 
 namespace Ocolin\EasySwagger\Tests;
 
+use Ocolin\EasyEnv\Errors\EasyEnvFileHandleError;
 use Ocolin\EasySwagger\Errors\InvalidMethodException;
 use Ocolin\EasyEnv\LoadEnv;
 use Ocolin\EasySwagger\Swagger;

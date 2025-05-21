@@ -83,7 +83,7 @@ class Swagger
         ?string $username    = null,
         ?string $password    = null,
          string $env_prefix  = 'SWAGGER',
-          ?bool   $standalone  = false
+          ?bool $standalone  = false
     )
     {
         if( $standalone === true ) {
@@ -91,11 +91,11 @@ class Swagger
         }
 
         $this->file = $this->load_JSON( file_name: $api_file );
-        $host        = $host        ?? $_ENV[ $env_prefix . '_HOST' ];
-        $base_uri    = $base_uri    ?? $_ENV[ $env_prefix . '_BASE_URI' ];
+        $host        = $host        ?? $_ENV[ $env_prefix . '_HOST' ] ?? null;
+        $base_uri    = $base_uri    ?? $_ENV[ $env_prefix . '_BASE_URI' ] ?? null;
         $token       = $token       ?? $_ENV[ $env_prefix . '_TOKEN' ] ?? '';
-        $username    = $username    ?? $_ENV[ $env_prefix . '_USERNAME' ];
-        $password    = $password    ?? $_ENV[ $env_prefix . '_PASSWORD' ];
+        $username    = $username    ?? $_ENV[ $env_prefix . '_USERNAME' ] ?? '';
+        $password    = $password    ?? $_ENV[ $env_prefix . '_PASSWORD' ] ?? '';
         $auth_method = $auth_method ?? $_ENV[ $env_prefix . '_AUTH_METHOD' ] ?? 'token';
         $token_name  = $token_name  ??
             $_ENV[ $env_prefix . '_TOKEN_NAME' ] ?? 'x-auth-token';

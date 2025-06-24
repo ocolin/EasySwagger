@@ -83,7 +83,8 @@ class Swagger
         ?string $username    = null,
         ?string $password    = null,
          string $env_prefix  = 'SWAGGER',
-          ?bool $standalone  = false
+          ?bool $standalone  = false,
+            int $timeout     = 20
     )
     {
         if( $standalone === true ) {
@@ -117,6 +118,7 @@ class Swagger
         $this->http = new HTTP(
                   auth: $auth,
               base_uri: $host . $base_uri,
+               timeout: $timeout
         );
     }
 

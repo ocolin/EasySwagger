@@ -51,7 +51,7 @@ class HTTP
         ?string $base_uri   = null,
            bool $verify     = false,
            bool $errors     = false,
-
+            int $timeout    = 20
     )
     {
         $this->auth     = $auth;
@@ -69,8 +69,8 @@ class HTTP
                 'verify'          => $verify,
                 'http_errors'     => $errors,
                 'auth'             => [ $this->auth->username, $this->auth->password ],
-                'timeout'         => 20,
-                'connect_timeout' => 20
+                'timeout'         => $timeout,
+                'connect_timeout' => $timeout
             ]);
         }
         else{
@@ -79,8 +79,8 @@ class HTTP
                 'base_uri'        => $this->base_uri,
                 'verify'          => $verify,
                 'http_errors'     => $errors,
-                'timeout'         => 20,
-                'connect_timeout' => 20
+                'timeout'         => $timeout,
+                'connect_timeout' => $timeout
             ]);
         }
     }

@@ -33,6 +33,7 @@ class testTarana extends TestCase
         $this->assertIsInt( actual: $output->status );
         $this->assertIsString( actual: $output->status_message );
         $this->assertIsObject( actual: $output->body );
+        $this->assertObjectHasProperty( propertyName: 'data', object: $output->body );
     }
 
 

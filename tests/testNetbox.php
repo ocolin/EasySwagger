@@ -20,8 +20,8 @@ class testNetbox extends TestCase
         );
 
         $output = $client->path(
-            path: '/ipam/ip-addresses/',
-            data: [ 'address' => '63.249.70.25' ]
+            path: '/ipam/ip-addresses/{id}/',
+            data: [ 'id' => '3019' ]
         );
 
         $this->assertIsObject( actual: $output );
@@ -33,6 +33,7 @@ class testNetbox extends TestCase
         $this->assertIsInt( actual: $output->status );
         $this->assertIsString( actual: $output->status_message );
         $this->assertIsObject( actual: $output->body );
+        $this->assertObjectHasProperty( propertyName: 'id', object: $output->body );
     }
 
 

@@ -151,10 +151,10 @@ class Swagger
             method: $this->method,
               file: $this->file
         );
+
         $this->path = Operation::build_Path(
-                  path: $this->path,
-            parameters: $this->operation->parameters,
-                  data: $data
+            path: $this->path,
+            data: $data
         );
 
         if( !empty( $data ) ) {

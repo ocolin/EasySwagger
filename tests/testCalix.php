@@ -33,6 +33,7 @@ class testCalix extends TestCase
         $this->assertIsInt( actual: $output->status );
         $this->assertIsString( actual: $output->status_message );
         $this->assertIsArray( actual: $output->body );
+        $this->assertIsObject( actual: $output->body[0] );
     }
 
 

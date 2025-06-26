@@ -151,19 +151,16 @@ class Operation extends File
      */
     public static function build_Path(
         string $path,
-         array $parameters,
          array $data
     ) : string
     {
-        foreach( $parameters as $param )
+        foreach( $data as $name => $value )
         {
-            if( $param->in === 'path' ) {
-                $path = str_replace(
-                    search: '{' . $param->name .'}',
-                    replace: $data[$param->name],
-                    subject: $path
-                );
-            }
+            $path = str_replace(
+                 search: '{' . $name .'}',
+                replace: $value,
+                subject: $path
+            );
         }
 
         return $path;

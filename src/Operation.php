@@ -158,7 +158,7 @@ class Operation extends File
         {
             $path = str_replace(
                  search: '{' . $name .'}',
-                replace: $value,
+                replace: (string)$value,
                 subject: $path
             );
         }

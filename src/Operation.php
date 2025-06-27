@@ -145,7 +145,6 @@ class Operation extends File
 
     /**
      * @param string $path
-     * @param array<string,object> $parameters
      * @param array<string,mixed> $data
      * @return string
      */
@@ -154,13 +153,16 @@ class Operation extends File
          array $data
     ) : string
     {
+        $allowed_types = [ 'integer', 'string', 'double', 'float' ];
         foreach( $data as $name => $value )
         {
-            $path = str_replace(
-                 search: '{' . $name .'}',
-                replace: (string)$value,
-                subject: $path
-            );
+            if( in_array( needle: gettype($value), haystack: $allowed_types ) ) {
+                $path = str_replace(
+                    search: '{' . $name . '}',
+                    replace: (string)$value,
+                    subject: $path
+                );
+            }
         }
 
         return $path;

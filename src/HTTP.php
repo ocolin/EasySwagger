@@ -6,7 +6,6 @@ namespace Ocolin\EasySwagger;
 
 use Exception;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Query;
 use Psr\Http\Message\ResponseInterface;
 
@@ -99,7 +98,6 @@ class HTTP
      * @param array<string,mixed>|null $query URI parameters.
      * @param array<string,string|int|float> $headers Optional HTTP headers.
      * @return Data Object with API response data.
-     * @throws GuzzleException
      */
 
     public function call(

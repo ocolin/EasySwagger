@@ -9,7 +9,6 @@ use Ocolin\EasySwagger\Errors\InvalidMethodException;
 use Ocolin\EasySwagger\Errors\MissingPropsException;
 use Ocolin\EasyEnv\LoadEnv;
 use stdClass;
-use GuzzleHttp\Exception\GuzzleException;
 use Ocolin\EasySwagger\Errors\MissingJsonException;
 use Ocolin\EasySwagger\Errors\LoadEnvException;
 use Ocolin\EasySwagger\Errors\InvalidJsonException;
@@ -132,7 +131,6 @@ class Swagger
      * @param string $method HTTP method.
      * @param array<string,mixed> $data Optional data parameters.
      * @return object API output (headers, body, status code, status msg)
-     * @throws GuzzleException
      * @throws InvalidMethodException
      */
 

@@ -131,7 +131,9 @@ class Operation extends File
         if( isset( $raw->consumes )) { $this->consumes = $raw->consumes; }
         if( isset( $raw->produces )) { $this->produces = $raw->produces; }
         if( isset( $raw->parameters )) {
-            $this->parameters = Parameter::get_Parameters( $raw->parameters );
+            if( isset( $raw->parameters->name )) {
+                $this->parameters = Parameter::get_Parameters($raw->parameters);
+            }
         }
         if( isset( $raw->responses )) { $this->responses = $raw->responses; }
         if( isset( $raw->schemes )) { $this->schemes = $raw->schemes; }
